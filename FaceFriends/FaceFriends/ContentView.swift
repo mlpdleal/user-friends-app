@@ -10,21 +10,47 @@ import SwiftUI
 struct ContentView: View {
     
     @ObservedObject var userFetcher = UserFetcher()
+    @Environment(\.managedObjectContext) var moc
+    @State private var showingOffline = false
+    
+    @FetchRequest(sortDescriptors: [])  var users: FetchedResults<CachedUser>
     
     var body: some View {
         NavigationView{
             List{
-                ForEach(userFetcher.users, id: \.id) { user in
-                    NavigationLink{
-                        DetailView(user: user, friend: user.friends)
-                    } label: {
-                        Text(user.name)
+                if showingOffline{
+                    ForEach(users, id: \.id) { user in
+                        NavigationLink{
+                            DetailCachedView(user: user)
+                        } label: {
+                            Text(user.wrappedName)
+                        }
                     }
                 }
+                else {
+                    ForEach(userFetcher.users, id: \.id) { user in
+                        NavigationLink{
+                            DetailView(user: user)
+                        } label: {
+                            Text(user.name)
+                        }
+                    }
+
+                }
+                
             }
             .navigationTitle("Users")
             .task {
-                await userFetcher.loadData()
+                await userFetcher.loadData(context: moc)
+            }
+            .toolbar{
+                ToolbarItem(placement: .navigationBarTrailing){
+                    Button {
+                        showingOffline.toggle()
+                    } label: {
+                        Image(systemName: "shuffle")
+                    }
+                }
             }
         }
     }

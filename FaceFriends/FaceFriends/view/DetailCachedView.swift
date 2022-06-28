@@ -1,39 +1,39 @@
 //
-//  DetailView.swift
+//  DetailCachedView.swift
 //  FaceFriends
 //
-//  Created by Manoel Leal on 25/06/22.
+//  Created by Manoel Leal on 27/06/22.
 //
 
 import SwiftUI
 
-struct DetailView: View {
-    
-    let user: User
+struct DetailCachedView: View {
+    let user: CachedUser
     
     var body: some View {
     
         NavigationView{
                 Form{
                     Section{
-                        Text("Name: \(user.name)")
+                        Text("Name: \(user.wrappedName)")
                         Text("Age: \(user.age)")
-                        Text("Company: \(user.company)")
-                        Text("E-mail: \(user.email)")
-                        Text("Adress: \(user.address)")
+                        Text("Company: \(user.wrappedCompany)")
+                        Text("E-mail: \(user.wrappedEmail)")
+                        Text("Adress: \(user.wrappedAddress)")
+                        Text("Tags: \(user.wrappedTags)")
                     } header: {
                         Text("Personal information")
                     }
                     
                     Section{
-                        Text(user.about)
+                        Text(user.wrappedAbout)
                     } header: {
                         Text("Description")
                     }
                     
                     Section{
                         List{
-                            ForEach(user.tags, id: \.self){
+                            ForEach(user.wrappedTags.components(separatedBy: ","), id: \.self){
                                 Text($0)
                             }
                         }
@@ -43,14 +43,18 @@ struct DetailView: View {
                     
                     Section{
                         List{
-                            ForEach(user.friends, id: \.id){
-                                Text($0.name)
+                            ForEach(user.cachedFriendsArray, id: \.self){
+                                Text($0.wrappedName)
                             }
                         }
                     } header: {
                         Text("Friends")
                     }
+                    
+                    
+  
  
+                    
                 }
                 .navigationTitle("User")
                 .navigationBarTitleDisplayMode(.inline)
@@ -62,8 +66,6 @@ struct DetailView: View {
      
         
     }
-    
-
 }
 
 
